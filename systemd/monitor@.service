@@ -1,0 +1,14 @@
+[Unit]
+Description=Aquarist TankController for %i
+After=time-sync.target
+
+[Service]
+User=aquarist
+Group=aquarist
+Type=simple
+ExecStart=/home/oscar/.python/aq/bin/python /home/oscar/monitor/scripts/%i.py
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
