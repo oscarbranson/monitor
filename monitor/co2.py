@@ -2,14 +2,12 @@
 
 import serial
 from time import sleep
-
-comm = serial.Serial('/dev/ttyS0', 9600, timeout=1, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
+from pathlib import Path
 
 commands = {
     'read': b'\xfe\x04\x00\x03\x00\x01\xd5\xc5',
     'disable_ABC': b'\xfe\x06\x00\x1f\x00\x00\xac\x03',
     'enable_ABC_start': b'\xfe\x06\x00\x1f'
-
 }
 
 def calculate_crc16(data: bytes) -> bytes:
@@ -24,38 +22,73 @@ def calculate_crc16(data: bytes) -> bytes:
                 crc >>= 1
     return crc.to_bytes(2, 'little')
 
-def read():
-    comm.flush()
+class SensorError(Exception):
+    def __init__(self, message="Can't communicate with sensor"):
+        self.mssage = message
+        super().__init__(self.message)
 
-    comm.write(commands['read'])
-    sleep(0.05)
+class Sensor:
+    def __init__(self, port='/dev/ttyS0'):
+        self.port = port
+        self.comm = None
     
-    data = comm.read(7)
-    sleep(0.05)
+    def __enter__(self):
+        self.open()
+        return self
     
-    return int.from_bytes(data[3:5], byteorder='big')
-
-def disable_ABC():
-    comm.flush()
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        self.close()
+        return False
     
-    comm.write(commands['disable_ABC'])
-    sleep(0.05)
-
-    data = comm.read(8)
+    def open(self):
+        if not self.comm:
+            self.comm = serial.Serial(self.port, 9600, timeout=1, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
+            self.ABC_on = False
+                
+    def close(self):
+        if self.comm and self.comm.is_open:
+            self.comm.close()
+            self.comm = None
     
-    return data
-
-def enable_ABC(period_hrs=180):
-    comm.flush()
+    def read(self):
+        self.comm.flush()
+        
+        self.comm.write(commands['read'])
+        sleep(0.05)
+        
+        if self.comm.any():
+            data = self.comm.read(7)
+            sleep(0.05)
+            value = int.from_bytes(data[3:5], byteorder='big')
+        else:
+            raise SensorError('No response from CO2 sensor. Is it connected?')
+        
+        return 
     
-    period_hex = int.to_bytes(int(period_hrs), 2, byteorder='big')
+    def disable_ABC(self):
+        self.comm.flush()
+        
+        self.comm.write(commands['disable_ABC'])
+        sleep(0.05)
+        
+        data = self.comm.read(8)
+        
+        self.ABC_on = not (data == commands['disable_ABC'])
     
-    msg = commands['enable_ABC_start'] + period_hex
-    msg += calculate_crc16(msg)
+    def enable_ABC(self, period_hrs=180):
+        self.comm.flush()
+        
+        period_hex = int.to_bytes(int(period_hrs), 2, byteorder='big')
+        
+        msg = commands['enable_ABC_start'] + period_hex
+        msg += calculate_crc16(msg)
+        
+        self.comm.write(msg)
+        sleep(0.05)
+        
+        data = self.comm.read(8)
+        
+        self.ABC_on = data == msg
     
-    comm.write(msg)
-    sleep(0.05)
-    
-    data = comm.read(8)
-    
-    return data
+    def close(self):
+        self.comm.close()
