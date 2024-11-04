@@ -14,8 +14,7 @@ class Logger:
         self.log_level = log_level
         self.sensor = sensor
         self._setup_logger()
-        self.info(f"Logger initialized for {self.sensor}")
-        
+                
     def _setup_logger(self):
         """Configure the logger with file and console handlers."""
         # Create logs directory if it doesn't exist
@@ -45,6 +44,10 @@ class Logger:
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(file_formatter)
         self.logger.addHandler(console_handler)
+        
+        # record initialisation message    
+        self.info(f"Logger initialized for {self.sensor}")
+
     
     def info(self, message):
         """Log info level message."""
