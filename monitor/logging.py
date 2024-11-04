@@ -14,6 +14,7 @@ class Logger:
         self.log_level = log_level
         self.sensor = sensor
         self._setup_logger()
+        self.info(f"Logger initialized for {self.sensor}")
         
     def _setup_logger(self):
         """Configure the logger with file and console handlers."""
