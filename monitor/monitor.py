@@ -29,18 +29,19 @@ class Monitor:
         """Main monitoring loop"""
         self.logger.info(f"Starting {self.name} monitor (measuring every {self.sample_rate}s)")
         
-        with self.sensor:
-            while self.running:
-                try:
-                    values = [sensor.read() for sensor in self.sensors.values()]
-                    self.logger.data(','.join([f'{v:.0f}' for v in values]))
-                except SensorError as e:  # Assuming specific exception exists
-                    self.logger.error(f"Sensor error: {e}")
-                    sleep(5)  # Short retry delay
-                    continue
-                except Exception as e:
-                    self.logger.error(f"Unexpected error: {e}")
-                    self.shutdown()
-                    break
-                
-                sleep(self.sample_rate)
+        while self.running:
+            for variable, sensor in self.sensors.items():
+                with sensor:
+                    try:
+                        value = sensor.read()
+                        self.logger.data(f"{variable},{value}")
+                    except SensorError as e:  # Assuming specific exception exists
+                        self.logger.error(f"{variable} sensor error: {e}")
+                        sleep(5)  # Short retry delay
+                        continue
+                    except Exception as e:
+                        self.logger.error(f"Unexpected error: {e}")
+                        self.shutdown()
+                        break
+            
+            sleep(self.sample_rate)
