@@ -51,7 +51,7 @@ class Sensor:
             self.comm = None
     
     def read(self):
-        self.comm.flush()
+        self.comm.flushInput()
         
         self.comm.write(commands['read'])
         sleep(0.05)
@@ -63,10 +63,12 @@ class Sensor:
         else:
             raise SensorError('No response from CO2 sensor. Is it connected?')
         
-        return 
+        self.comm.flushOutput()
+
+        return value
     
     def disable_ABC(self):
-        self.comm.flush()
+        self.comm.flushInput()
         
         self.comm.write(commands['disable_ABC'])
         sleep(0.05)
@@ -74,9 +76,12 @@ class Sensor:
         data = self.comm.read(8)
         
         self.ABC_on = not (data == commands['disable_ABC'])
+        
+        self.comm.flushOutput()
+
     
     def enable_ABC(self, period_hrs=180):
-        self.comm.flush()
+        self.comm.flushInput()
         
         period_hex = int.to_bytes(int(period_hrs), 2, byteorder='big')
         
@@ -89,6 +94,9 @@ class Sensor:
         data = self.comm.read(8)
         
         self.ABC_on = data == msg
+        
+        self.comm.flushOutput()
+
     
     def close(self):
         self.comm.close()
