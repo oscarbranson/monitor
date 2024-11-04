@@ -4,6 +4,8 @@ import serial
 from time import sleep
 from pathlib import Path
 
+from .errors import SensorError
+
 commands = {
     'read': b'\xfe\x04\x00\x03\x00\x01\xd5\xc5',
     'ABC_disable': b'\xfe\x06\x00\x1f\x00\x00\xac\x03',
@@ -22,11 +24,6 @@ def calculate_crc16(data: bytes) -> bytes:
             else:
                 crc >>= 1
     return crc.to_bytes(2, 'little')
-
-class SensorError(Exception):
-    def __init__(self, message="Can't communicate with sensor"):
-        self.mssage = message
-        super().__init__(self.message)
 
 class Sensor:
     def __init__(self, port='/dev/ttyS0'):
