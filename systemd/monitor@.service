@@ -1,10 +1,10 @@
 [Unit]
-Description=Aquarist TankController for %i
+Description=Raspberry Pi Zero %i Monitor
 After=time-sync.target
 
 [Service]
-User=aquarist
-Group=aquarist
+User=oscar
+Group=oscar
 Type=simple
 ExecStart=/home/oscar/.python/co2/bin/python /home/oscar/monitor/scripts/%i.py
 Restart=always
