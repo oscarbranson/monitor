@@ -56,7 +56,7 @@ class Sensor:
         self.comm.write(commands['read'])
         sleep(0.05)
         
-        if self.comm.in_waiting():
+        if self.comm.in_waiting:
             data = self.comm.read(7)
             sleep(0.05)
             value = int.from_bytes(data[3:5], byteorder='big')
