@@ -84,7 +84,7 @@ class Sensor:
         self.comm.flushOutput()
 
     
-    def enable_ABC(self, period_hrs=180):
+    def set_ABC_period(self, period_hrs=180):
         self.comm.flushInput()
         
         period_hex = int.to_bytes(int(period_hrs), 2, byteorder='big')
@@ -92,6 +92,7 @@ class Sensor:
         msg = commands['ABC_enable_start'] + period_hex
         msg += calculate_crc16(msg)
         
+        print(msg)
         self.comm.write(msg)
         sleep(0.05)
         
