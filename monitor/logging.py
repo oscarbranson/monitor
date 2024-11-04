@@ -8,7 +8,7 @@ logging.addLevelName(DATA_LEVEL, 'DATA')
 logging.DATA = DATA_LEVEL
 
 class Logger:
-    def __init__(self, sensor='CO2', log_dir="logs", log_level=logging.DATA):
+    def __init__(self, sensor='CO2', log_dir="logs", log_level=logging.INFO):
         """Initialize logger with directory and level."""
         self.log_dir = Path(log_dir)
         self.log_level = log_level
