@@ -73,13 +73,13 @@ class Sensor:
     def disable_ABC(self):
         self.comm.flushInput()
         
-        self.comm.write(commands['disable_ABC'])
+        self.comm.write(commands['ABC_disable'])
         sleep(0.05)
         
         if self.comm.in_waiting > 0:
             data = self.comm.read(self.comm.in_waiting)
         
-            self.ABC_on = not (data == commands['disable_ABC'])
+            self.ABC_on = not (data == commands['ABC_disable'])
         
         self.comm.flushOutput()
 
@@ -89,7 +89,7 @@ class Sensor:
         
         period_hex = int.to_bytes(int(period_hrs), 2, byteorder='big')
         
-        msg = commands['enable_ABC_start'] + period_hex
+        msg = commands['ABC_enable_start'] + period_hex
         msg += calculate_crc16(msg)
         
         self.comm.write(msg)
