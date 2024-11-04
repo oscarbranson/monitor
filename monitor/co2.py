@@ -31,9 +31,7 @@ class Sensor:
     def __init__(self, port='/dev/ttyS0'):
         self.port = port
         self.comm = None
-        
-        self.open()
-    
+            
     def __enter__(self):
         self.open()
         return self
