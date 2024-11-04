@@ -44,10 +44,6 @@ class Logger:
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(file_formatter)
         self.logger.addHandler(console_handler)
-        
-        # record initialisation message    
-        self.info(f"Logger initialized for {self.sensor}")
-
     
     def info(self, message):
         """Log info level message."""
