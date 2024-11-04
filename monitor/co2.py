@@ -105,7 +105,7 @@ class Sensor:
     def get_ABC_period(self):
         self.comm.flushInput()
         
-        self.comm.write(commands['get_ABC_period'])
+        self.comm.write(commands['ABC_get_period'])
         sleep(0.05)
         
         if self.comm.in_waiting > 0:
