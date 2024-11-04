@@ -6,7 +6,7 @@ After=time-sync.target
 User=aquarist
 Group=aquarist
 Type=simple
-ExecStart=/home/oscar/.python/aq/bin/python /home/oscar/monitor/scripts/%i.py
+ExecStart=/home/oscar/.python/co2/bin/python /home/oscar/monitor/scripts/%i.py
 Restart=always
 RestartSec=30
 
